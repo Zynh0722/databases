@@ -81,4 +81,4 @@ ALTER TABLE `messages` ADD FOREIGN KEY (github_handle) REFERENCES `github_handle
  *    mysql -u root < server/schema.sql
  *  to create the database and the tables.*/
 
-SOURCE populate.sql;
+-- SOURCE server/dev/populate.sql;
