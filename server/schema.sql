@@ -17,7 +17,7 @@ USE chat;
 DROP TABLE IF EXISTS `messages`;
 
 CREATE TABLE `messages` (
-  `id` INTEGER NOT NULL,
+  `id` INTEGER NOT NULL AUTO_INCREMENT,
   `content` TEXT NULL DEFAULT NULL,
   `room` INTEGER NULL DEFAULT NULL,
   `author` TEXT NULL DEFAULT NULL,
@@ -81,3 +81,4 @@ ALTER TABLE `messages` ADD FOREIGN KEY (github_handle) REFERENCES `github_handle
  *    mysql -u root < server/schema.sql
  *  to create the database and the tables.*/
 
+SOURCE populate.sql;
