@@ -18,9 +18,9 @@ DROP TABLE IF EXISTS `messages`;
 
 CREATE TABLE `messages` (
   `id` INTEGER NOT NULL AUTO_INCREMENT,
-  `content` TEXT NULL DEFAULT NULL,
+  `text` TEXT NULL DEFAULT NULL,
   `room` INTEGER NULL DEFAULT NULL,
-  `author` TEXT NULL DEFAULT NULL,
+  `username` TEXT NULL DEFAULT NULL,
   `github_handle` INTEGER NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
 );
@@ -34,7 +34,7 @@ DROP TABLE IF EXISTS `rooms`;
 
 CREATE TABLE `rooms` (
   `id` INTEGER NOT NULL AUTO_INCREMENT,
-  `name` TEXT NOT NULL,
+  `roomname` TEXT NOT NULL,
   PRIMARY KEY (`id`)
 );
 
@@ -55,8 +55,8 @@ CREATE TABLE `github_handles` (
 -- Foreign Keys
 -- ---
 
-ALTER TABLE `messages` ADD FOREIGN KEY (room) REFERENCES `rooms` (`id`);
-ALTER TABLE `messages` ADD FOREIGN KEY (github_handle) REFERENCES `github_handles` (`id`);
+-- ALTER TABLE `messages` ADD FOREIGN KEY (room) REFERENCES `rooms` (`id`);
+-- ALTER TABLE `messages` ADD FOREIGN KEY (github_handle) REFERENCES `github_handles` (`id`);
 
 -- ---
 -- Table Properties

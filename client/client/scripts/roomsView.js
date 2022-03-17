@@ -29,8 +29,8 @@ var RoomsView = {
     }
   },
 
-  renderRoom: _.template(`
-    <option value=<%= roomname %>><%= roomtitle %></option>
+  renderRoom: ({roomname, roomtitle}) => (`
+    <option value="${roomname}">${roomtitle}</option>
     `),
 
   handleChange: function(event) {

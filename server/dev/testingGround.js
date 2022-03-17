@@ -1,22 +1,36 @@
 var mysql = require('mysql2');
 
-const dbConnection = mysql.createConnection({
+const db = mysql.createConnection({
   user: 'root',
   password: '',
   database: 'chat',
 });
 
-dbConnection.connect();
+db.connect();
 
-const queryString = 'INSERT INTO messages (content, room, author, github_handle) VALUES (?, ?, ?, ?)';
-const queryArgs = [ 'abcd', 1, 'krenko', 1 ];
+const getRoomQuery = roomname => `SELECT * FROM rooms WHERE roomname = '${roomname}'`;
+const insertRoomQuery = roomname => `INSERT INTO rooms (roomname) VALUES ('${roomname}')`;
 
-dbConnection.query(queryString, queryArgs, (err, results) => {
-  if (err) {
-    throw err;
-  }
+const getRoom = (roomname, cb) => {
+  db.query(getRoomQuery(roomname), (err, results) => {
+    if (err) {
+      cb(err);
+    } else {
+      if (results[0] && results[0].roomname === roomname) {
+        cb(null, results[0].id);
+      } else {
+        db.query(insertRoomQuery(roomname), (err, res) => {
+          cb(null, res.insertId);
+        });
+      }
+    }
+  });
+};
 
-  console.log(results);
-});
+const queryString = 'SELECT * FROM rooms WHERE roomname = \'obby\'';
+const queryArgs = [];
 
-dbConnection.end();
+getRoom('obby', (err, id) => console.log(id));
+getRoom('quirky room uwu', (err, id) => console.log(id));
+
+// db.end();

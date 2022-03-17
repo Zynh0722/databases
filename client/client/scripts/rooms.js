@@ -11,9 +11,10 @@ var Rooms = {
     //loop through messages
     //compile an array
 
-    Rooms._data = {};
+    Rooms._data = Rooms._data || {};
 
     for (let message of data) {
+      // console.log('message ' + JSON.stringify(message));
       if (message.roomname) {
         Rooms._data[message.roomname.replace(/</, '&#60')] = true;
       }

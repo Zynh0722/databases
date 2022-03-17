@@ -1,6 +1,6 @@
-INSERT INTO rooms (name) VALUES ('obby');
-INSERT INTO rooms (name) VALUES ('walters hidey hole');
-INSERT INTO rooms (name) VALUES ('goblin cove');
+INSERT INTO rooms (roomname) VALUES ('obby');
+INSERT INTO rooms (roomname) VALUES ('walters hidey hole');
+INSERT INTO rooms (roomname) VALUES ('goblin cove');
 
 INSERT INTO github_handles (name) VALUES ('Zynh0722');
 INSERT INTO github_handles (name) VALUES ('RosenSorcerer');
