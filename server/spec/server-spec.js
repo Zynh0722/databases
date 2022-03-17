@@ -3,6 +3,7 @@
 
 const mysql = require('mysql2');
 const axios = require('axios');
+const util = require('util');
 
 const API_URL = 'http://127.0.0.1:3000/classes';
 
@@ -14,7 +15,10 @@ describe('Persistent Node Chat Server', () => {
   });
 
   beforeAll((done) => {
-    dbConnection.connect();
+    dbConnection.connect(done);
+  });
+
+  beforeEach((done) => {
 
     const messagesTable = 'messages';
     const handlesTable = 'github_handles';
@@ -24,11 +28,14 @@ describe('Persistent Node Chat Server', () => {
      * (or repeated runs of the tests)  will not fail when they should be passing
      * or vice versa */
 
-    dbConnection.query('source server/spec/removeFKeys.sql', () => {
-      [messagesTable, roomsTable, handlesTable].forEach((tablename) => {
-        dbConnection.query(`truncate ${tablename}`, done);
+    dbConnection.query(`truncate ${messagesTable}`, () => {
+      dbConnection.query(`truncate ${handlesTable}`, () => {
+        dbConnection.query(`truncate ${roomsTable}`, () => {
+          done();
+        });
       });
     });
+
 
   }, 10000);
 
@@ -77,42 +84,43 @@ describe('Persistent Node Chat Server', () => {
       'Quiet Room'];
     // Create a user on the chat server database.
     let posts = [
-      axios.post(`${API_URL}/messages`,
-        { username: usernames[0],
-          text: texts[0],
-          roomname: roomnames }),
-      axios.post(`${API_URL}/messages`,
-        { username: usernames[1],
-          text: texts[1],
-          roomname: roomnames }),
-      axios.post(`${API_URL}/messages`,
-        { username: usernames[2],
-          text: texts[2],
-          roomname: roomnames })
     ];
 
-    Promise.all(posts)
+    axios.post(`${API_URL}/messages`,
+      { username: usernames[0],
+        text: texts[0],
+        roomname: roomnames[0] })
+      .then(() => axios.post(`${API_URL}/messages`,
+        { username: usernames[1],
+          text: texts[1],
+          roomname: roomnames[1] }))
+      .then(() => axios.post(`${API_URL}/messages`,
+        { username: usernames[2],
+          text: texts[2],
+          roomname: roomnames[2] }))
       .then(() => {
-        // Now if we look in the database, we should find the posted message there.
+        setTimeout(() => {
+          // Now if we look in the database, we should find the posted message there.
 
-        /* DONE: You might have to change this test to get all the data from
-         * your message table, since this is schema-dependent. */
-        const queryString = 'SELECT * FROM messages';
-        const queryArgs = [];
+          /* DONE: You might have to change this test to get all the data from
+          * your message table, since this is schema-dependent. */
+          const queryString = 'SELECT * FROM messages';
+          const queryArgs = [];
 
-        dbConnection.query(queryString, queryArgs, (err, results) => {
-          if (err) {
-            throw err;
-          }
-          // Should have one result:
-          expect(results.length).toEqual(3);
+          dbConnection.query(queryString, queryArgs, (err, results) => {
+            if (err) {
+              throw err;
+            }
+            // Should have one result:
+            expect(results.length).toEqual(3);
 
-          // DONE: If you don't have a column named text, change this test.
-          expect(results[0].text).toEqual(texts[0]);
-          expect(results[1].text).toEqual(texts[1]);
-          expect(results[2].text).toEqual(texts[2]);
-          done();
-        });
+            // DONE: If you don't have a column named text, change this test.
+            expect(results[0].text).toEqual(texts[0]);
+            expect(results[1].text).toEqual(texts[1]);
+            expect(results[2].text).toEqual(texts[2]);
+            done();
+          });
+        }, 100);
       })
       .catch((err) => {
         throw err;
@@ -161,20 +169,28 @@ describe('Persistent Node Chat Server', () => {
     const text2 = 'Everyone forgets me to focus on Cosette';
     const roomname2 = 'LesMis';
 
-    const posts = [axios.post(`${API_URL}/messages`, { username, text, roomname }), axios.post(`${API_URL}/messages`, { username2, text2, roomname2})];
-    // Create a user on the chat server database.
-    Promise.all(posts)
+    axios.post(`${API_URL}/messages`,
+      { username: username,
+        text: text,
+        roomname: roomname })
+      .then(() => axios.post(`${API_URL}/messages`,
+        { username: username2,
+          text: text2,
+          roomname: roomname2 }))
       .then(() => {
+        setTimeout(() => {
+          const queryString = 'SELECT * FROM messages m INNER JOIN rooms r ON r.id = m.room';
+          const queryArgs = [];
+          dbConnection.query(queryString, queryArgs, (err, results) => {
+            if (err) {
+              throw err;
+            }
 
-        axios.get(`${API_URL}/messages`)
-          .then((response) => {
-            console.log(response);
-            expect(response.data[0].roomname).toEqual(roomname);
-            expect(response.data[1].roomname).toEqual(roomname2);
-          })
-          .catch((err) => {
-            throw err;
+            expect(results[0].roomname).toEqual(roomname);
+            expect(results[1].roomname).toEqual(roomname2);
+            done();
           });
+        }, 100);
       });
   });
 });
