@@ -28,6 +28,7 @@ app.use(express.static(__dirname + '/../client'));
 // If we are being run directly, run the server.
 if (!module.parent) {
   app.listen(app.get('port'));
-  console.log('Listening on', app.get('port'));
+  console.log('Listening on', `http://127.0.0.1:${app.get('port')}/`);
+  console.log(`http://127.0.0.1:${app.get('port')}/chatterbox.html`);
 }
 

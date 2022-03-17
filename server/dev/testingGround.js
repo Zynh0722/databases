@@ -8,8 +8,8 @@ const dbConnection = mysql.createConnection({
 
 dbConnection.connect();
 
-const queryString = 'SELECT * FROM messages m INNER JOIN github_handles g ON m.github_handle = g.id';
-const queryArgs = [];
+const queryString = 'INSERT INTO messages (content, room, author, github_handle) VALUES (?, ?, ?, ?)';
+const queryArgs = [ 'abcd', 1, 'krenko', 1 ];
 
 dbConnection.query(queryString, queryArgs, (err, results) => {
   if (err) {
